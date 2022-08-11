@@ -8,8 +8,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    env:
-      CONFIG_NAME: ${{ format('{0}-{1}-{2}', 'ultmt-api-config', github.run_number, github.run_attempt) }}
+
     steps:
       - name: Check Out Repo 
         uses: actions/checkout@v2
@@ -25,6 +24,7 @@ jobs:
 
       - name: Create config
         run: |
+          echo $CONFIG_NAME
           gcloud api-gateway api-configs create $CONFIG_NAME --api=ultmt-app-api --openapi-spec=openapi.yml --project=dev-ultmt-app --backend-auth-service-account=ultmt-service-account@dev-ultmt-app.iam.gserviceaccount.com
       
       - name: Update API Gateway config
