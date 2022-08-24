@@ -1215,6 +1215,12 @@ paths:
         address: https://stall-one-nal27utw4a-uc.a.run.app
         path_translation: APPEND_PATH_TO_ADDRESS
         disable_auth: true
+      parameters:
+        - in: body
+          name: createGameData
+          description: Data needed to create a game
+          schema:
+            $ref: '#/definitions/CreateGame'
       responses:
         '201':
           description: Successfully created a team
@@ -1235,6 +1241,12 @@ paths:
         address: https://stall-one-nal27utw4a-uc.a.run.app
         path_translation: APPEND_PATH_TO_ADDRESS
         disable_auth: true
+      parameters:
+        - in: body
+          name: gameData
+          description: Data needed to update a game
+          schema:
+            $ref: '#/definitions/UpdateGame'
       responses:
         '200':
           description: Successfully created a team
@@ -1253,7 +1265,7 @@ paths:
           schema:
             $ref: '#/definitions/Error'
   /api/v1/game/resolve/{id}:
-    get:
+    put:
       summary: Resolve team two of a game
       operationId: resolveGame
       x-google-backend:
@@ -1281,6 +1293,41 @@ paths:
           description: Successfully resolved team two
           schema:
             $ref: '#/definitions/GameWithToken'
+        '401':
+          description: Unauthenticated user
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Unfound game
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Backend error
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/game/player/guest:
+    put:
+      summary: Add a guest player to a team for a game
+      operationId: addGuestPlayer
+      x-google-backend:
+        address: https://stall-one-nal27utw4a-uc.a.run.app
+        path_translation: APPEND_PATH_TO_ADDRESS
+        disable_auth: true
+      parameters:
+        - in: body
+          name: player
+          description: Player data to add
+          schema:
+            $ref: '#/definitions/EmbeddedUser'
+      responses:
+        '200':
+          description: Player successfully added
+          schema:
+            $ref: '#/definitions/Game'
+        '400':
+          description: Unable to add player
+          schema:
+            $ref: '#/definitions/Error'
         '401':
           description: Unauthenticated user
           schema:
@@ -1489,9 +1536,13 @@ definitions:
         $ref: '#/definitions/EmbeddedTeam'
       teamTwoResolved:
         type: boolean
+      teamTwoDefined:
+        type: boolean
       creator:
         $ref: '#/definitions/EmbeddedUser'
-      token:
+      teamOneToken:
+        type: string
+      teamTwotoken:
         type: string
       scoreLimit:
         type: number
@@ -1524,6 +1575,58 @@ definitions:
         type: array
         items:
           type: string
+      timeoutPerHalf:
+        type: number
+      floaterTimeout:
+        type: boolean
+  CreateGame:
+    type: object
+    properties:
+      creator:
+        $ref: '#/definitions/EmbeddedUser'
+      teamOne:
+        $ref: '#/definitions/EmbeddedTeam'
+      teamTwo:
+        $ref: '#/definitions/EmbeddedTeam'
+      teamTwoDefined:
+        type: boolean
+      scoreLimit:
+        type: number
+      startTime:
+        type: string
+        format: date
+      softcapMins:
+        type: number
+      hardcapMins:
+        type: number
+      liveGame:
+        type: boolean
+      playersPerPoint:
+        type: number
+      timeoutPerHalf:
+        type: number
+      floaterTimeout:
+        type: boolean
+  UpdateGame:
+    type: object
+    properties:
+      teamTwo:
+        $ref: '#/definitions/EmbeddedTeam'
+      teamTwoDefined:
+        type: boolean
+      scoreLimit:
+        type: number
+      startTime:
+        type: string
+        format: date
+      softcapMins:
+        type: number
+      hardcapMins:
+        type: number
+      liveGame:
+        type: boolean
+      playersPerPoint:
+        type: number
       timeoutPerHalf:
         type: number
       floaterTimeout:
