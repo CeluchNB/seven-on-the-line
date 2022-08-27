@@ -1389,9 +1389,7 @@ paths:
           name: players
           description: Array of players for point, must be correct amount
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/EmbeddedUser'
+            $ref: '#/definitions/EmbeddedUser'
       responses:
         '200':
           description: Players successfully added
