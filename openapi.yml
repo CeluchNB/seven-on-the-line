@@ -1340,6 +1340,75 @@ paths:
           description: Backend error
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/point/first:
+    post:
+      summary: Create the first point of the game
+      operationId: createFirstPoint
+      x-google-backend:
+        address: https://stall-one-nal27utw4a-uc.a.run.app
+        path_translation: APPEND_PATH_TO_ADDRESS
+        disable_auth: true
+      parameters:
+        - in: query
+          name: pulling
+          description: Boolean to determine if calling team is pulling
+          required: true
+          type: boolean
+      responses:
+        '200':
+          description: Point successfully created
+          schema:
+            $ref: '#/definitions/Point'
+        '400':
+          description: Error creating point
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: Invalid game token
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Unfound game
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/point/players/{id}:
+    put:
+      summary: Set players for a point
+      operationId: setPointPlayers
+      x-google-backend:
+        address: https://stall-one-nal27utw4a-uc.a.run.app
+        path_translation: APPEND_PATH_TO_ADDRESS
+        disable_auth: true
+      parameters:
+        - in: path
+          name: id
+          description: Point ID
+          required: true
+          type: string
+        - in: body
+          name: players
+          description: Array of players for point, must be correct amount
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/EmbeddedUser'
+      responses:
+        '200':
+          description: Players successfully added
+          schema:
+            $ref: '#/definitions/Point'
+        '400':
+          description: Error adding players
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: Invalid game token
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Unfound point
+          schema:
+            $ref: '#/definitions/Error'
 securityDefinitions:
   APIKey:
     type: apiKey
@@ -1530,6 +1599,8 @@ definitions:
   Game:
     type: object
     properties:
+      _id:
+        type: string
       teamOne:
         $ref: '#/definitions/EmbeddedTeam'
       teamTwo:
@@ -1542,7 +1613,7 @@ definitions:
         $ref: '#/definitions/EmbeddedUser'
       teamOneToken:
         type: string
-      teamTwotoken:
+      teamTwoToken:
         type: string
       scoreLimit:
         type: number
@@ -1638,3 +1709,28 @@ definitions:
         $ref: '#/definitions/Game'
       token:
         type: string
+  Point:
+    type: object
+    properties:
+      _id:
+        type: string
+      gameId:
+        type: string
+      teamOnePlayers:
+        type: array
+        items:
+          $ref: '#/definitions/EmbeddedUser'
+      teamTwoPlayers:
+        type: array
+        items:
+          $ref: '#/definitions/EmbeddedUser'
+      teamOneScore:
+        type: number
+      teamTwoScore:
+        type: number
+      pullingTeam:
+        $ref: '#/definitions/EmbeddedTeam'
+      receivingTeam:
+        $ref: '#/definitions/EmbeddedTeam'
+      scoringTeam:
+        $ref: '#/definitions/EmbeddedTeam'
