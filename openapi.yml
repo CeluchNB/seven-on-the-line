@@ -1340,10 +1340,35 @@ paths:
           description: Backend error
           schema:
             $ref: '#/definitions/Error'
-  /api/v1/point/first:
+  /api/v1/game/finish:
+    put:
+      summary: Mark game as finished from a team
+      operationId: finishGame
+      x-google-backend:
+        address: https://stall-one-nal27utw4a-uc.a.run.app
+        path_translation: APPEND_PATH_TO_ADDRESS
+        disable_auth: true
+      responses:
+        '200':
+          description: Game successfully marked as finished
+          schema:
+            $ref: '#/definitions/Game'
+        '401':
+          description: Invalid game token
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Unfound game
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Backend error
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/point:
     post:
-      summary: Create the first point of the game
-      operationId: createFirstPoint
+      summary: Create a point for a game
+      operationId: createPoint
       x-google-backend:
         address: https://stall-one-nal27utw4a-uc.a.run.app
         path_translation: APPEND_PATH_TO_ADDRESS
@@ -1354,6 +1379,11 @@ paths:
           description: Boolean to determine if calling team is pulling
           required: true
           type: boolean
+        - in: query
+          name: number
+          description: Point number to create
+          required: true
+          type: number
       responses:
         '200':
           description: Point successfully created
@@ -1371,7 +1401,7 @@ paths:
           description: Unfound game
           schema:
             $ref: '#/definitions/Error'
-  /api/v1/point/players/{id}:
+  /api/v1/point/{id}/players:
     put:
       summary: Set players for a point
       operationId: setPointPlayers
@@ -1405,6 +1435,66 @@ paths:
             $ref: '#/definitions/Error'
         '404':
           description: Unfound point
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/point/{id}/finish:
+    put:
+      summary: Mark a point as finished
+      operationId: finishPoint
+      x-google-backend:
+          address: https://stall-one-nal27utw4a-uc.a.run.app
+          path_translation: APPEND_PATH_TO_ADDRESS
+          disable_auth: true
+      parameters:
+        - in: path
+          name: id
+          description: Point ID
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Point successfully finished
+          schema:
+            $ref: '#/definitions/Point'
+        '400':
+          description: A data error occurred while finishing point
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: Invalid game token
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Unable to find point or game
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/point/{id}:
+    delete:
+      summary: Delete a point
+      operationId: deletePoint
+      x-google-backend:
+          address: https://stall-one-nal27utw4a-uc.a.run.app
+          path_translation: APPEND_PATH_TO_ADDRESS
+          disable_auth: true
+      parameters:
+        - in: path
+          name: id
+          description: Point ID
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Point successfully delete
+        '400':
+          description: A data error occurred while deleting point
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: Invalid game token
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Unable to find point or game
           schema:
             $ref: '#/definitions/Error'
 securityDefinitions:
