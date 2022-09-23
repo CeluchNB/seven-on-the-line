@@ -1,0 +1,36 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      CONFIG_NAME: ${{ format('{0}-{1}-{2}', 'ultmt-api-config', github.run_number, github.run_attempt) }}
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+      - name: Check Out Repo 
+        uses: actions/checkout@v2
+      
+      - name: 'Authenticate to GCP'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          workload_identity_provider: 'projects/267063385539/locations/global/workloadIdentityPools/dev-ultmt-pool/providers/dev-ultmt-provider'
+          service_account: 'ultmt-service-account@dev-ultmt-app.iam.gserviceaccount.com'
+      
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v0'
+
+      - name: Create config
+        run: |
+          gcloud api-gateway api-configs create $CONFIG_NAME --api=ultmt-app-api --openapi-spec=openapi.yml --project=dev-ultmt-app --backend-auth-service-account=ultmt-service-account@dev-ultmt-app.iam.gserviceaccount.com
+      
+      - name: Update API Gateway config
+        run: |
+          gcloud api-gateway gateways update ultmt-app-api-gateway --api-config=$CONFIG_NAME --api=ultmt-app-api --location=us-central1 --project=dev-ultmt-app
