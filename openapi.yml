@@ -1401,6 +1401,42 @@ paths:
           description: Unfound game
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/point/{id}/pulling:
+    put:
+      summary: Update pulling and receiving teams for a point
+      operationId: pointPullingTeam
+      x-google-backend:
+        address: https://stall-one-nal27utw4a-uc.a.run.app
+        path_translation: APPEND_PATH_TO_ADDRESS
+        disable_auth: true
+      parameters:
+        - in: query
+          name: team
+          description: string
+          required: true
+          type: string
+        - in: path
+          name: id
+          description: Point ID
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Players successfully added
+          schema:
+            $ref: '#/definitions/Point'
+        '400':
+          description: Error adding players
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: Invalid game token
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Unfound point or game
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/point/{id}/players:
     put:
       summary: Set players for a point
