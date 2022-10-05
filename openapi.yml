@@ -1533,6 +1533,77 @@ paths:
           description: Unable to find point or game
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/tournament:
+    post:
+      summary: Create a tournament
+      operationId: createTournament
+      x-google-backend:
+        address: https://stall-one-nal27utw4a-uc.a.run.app
+        path_translation: APPEND_PATH_TO_ADDRESS
+        disable_auth: true
+      parameters:
+        - in: body
+          name: createTournamentData
+          description: Data needed to create a tournament
+          schema:
+            $ref: '#/definitions/CreateTournament'
+      responses:
+        '201':
+          description: Successfully created a tournament
+          schema:
+            $ref: '#/definitions/Tournament'
+        '500':
+          description: Error creating tournament
+          schema: 
+            $ref: '#/definitions/Error'
+  /api/v1/tournament/{id}:
+    get:
+      summary: Get a tournament
+      operationId: getTournament
+      x-google-backend:
+        address: https://stall-one-nal27utw4a-uc.a.run.app
+        path_translation: APPEND_PATH_TO_ADDRESS
+        disable_auth: true
+      parameters:
+        - in: path
+          name: id
+          description: Tournament ID
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Found game
+          schema:
+            $ref: '#/definitions/Tournament'
+        '404':
+          description: Could not find game
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/tournament/search:
+    get:
+      summary: Search tournaments
+      operationId: searchTournaments
+      x-google-backend:
+        address: https://stall-one-nal27utw4a-uc.a.run.app
+        path_translation: APPEND_PATH_TO_ADDRESS
+        disable_auth: true
+      parameters:
+        - in: query
+          name: q
+          type: string
+          description: Search query string
+          required: true
+      responses:
+        '200':
+          description: An array of length 0 or greater with tournaments
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Tournament'
+        '500':
+          description: An error occurred on the backend
+          schema:
+            $ref: '#/definitions/Error'
 securityDefinitions:
   APIKey:
     type: apiKey
@@ -1774,6 +1845,8 @@ definitions:
         type: number
       floaterTimeout:
         type: boolean
+      tournament:
+        $ref: '#/definitions/Tournament'
   CreateGame:
     type: object
     properties:
@@ -1802,6 +1875,8 @@ definitions:
         type: number
       floaterTimeout:
         type: boolean
+      tournament:
+        $ref: '#/definitions/Tournament'
   UpdateGame:
     type: object
     properties:
@@ -1826,6 +1901,8 @@ definitions:
         type: number
       floaterTimeout:
         type: boolean
+      tournament:
+        $ref: '#/definitions/Tournament'
   GameWithToken:
     type: object
     properties:
@@ -1858,3 +1935,31 @@ definitions:
         $ref: '#/definitions/EmbeddedTeam'
       scoringTeam:
         $ref: '#/definitions/EmbeddedTeam'
+  CreateTournament:
+    type: object
+    properties:
+      name:
+        type: string
+      eventId:
+        type: string
+      startDate:
+        type: string
+        format: date
+      endDate:
+        type: string
+        format: date
+  Tournament:
+    type: object
+    properties:
+      _id:
+        type: string
+      name:
+        type: string
+      eventId:
+        type: string
+      startDate:
+        type: string
+        format: date
+      endDate:
+        type: string
+        format: date
