@@ -78,7 +78,7 @@ paths:
           description: User was unsuccessfully created due to backend error
           schema:
             $ref: '#/definitions/Error'
-  /api/v1/user/login:
+  /api/v1/auth/login:
     post:
       summary: Login with local authentication strategy
       operationId: loginUser
@@ -104,25 +104,10 @@ paths:
           description: A token could not be created
           schema:
             $ref: '#/definitions/Error'
-  /api/v1/user/logout:
+  /api/v1/auth/logout:
     post:
       summary: Endpoint to log a user out with a specific token
       operationId: logoutUser
-      x-google-backend:
-        address: https://ultmt-api-nal27utw4a-uc.a.run.app
-        path_translation: APPEND_PATH_TO_ADDRESS
-        disable_auth: true
-      responses:
-        '200':
-          description: A success message with no data
-        '404':
-          description: An error message because the user was not found
-          schema:
-            $ref: '#/definitions/Error'
-  /api/v1/user/logoutAll:
-    post:
-      summary: Endpoint to log a user out of all devices
-      operationId: logoutAllUser
       x-google-backend:
         address: https://ultmt-api-nal27utw4a-uc.a.run.app
         path_translation: APPEND_PATH_TO_ADDRESS
@@ -487,7 +472,7 @@ paths:
           description: Backend error message
           schema:
             $ref: '#/definitions/Error'
-  /api/v1/user/manager/authenticate:
+  /api/v1/auth/manager:
     get:
       summary: Authenticate a user as manager of a team
       operationId: authenticateManager
@@ -507,6 +492,23 @@ paths:
             $ref: '#/definitions/User'
         '401':
           description: User is unauthenticated
+  /api/v1/auth/refresh:
+    post:
+      summary: Refresh a user's access token
+      operationId: refreshTokens
+      x-google-backend:
+        address: https://ultmt-api-nal27utw4a-uc.a.run.app
+        path_translation: APPEND_PATH_TO_ADDRESS
+        disable_auth: true
+      responses:
+        '200':
+          description: Updates tokens
+          schema:
+            $ref: '#/definitions/Tokens'
+        '401':
+          description: Invalid token
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/team/search:
     get:
       summary: Search for team by location, name, or teamname
@@ -1686,13 +1688,20 @@ definitions:
         type: array
         items:
           type: string
+  Tokens:
+    type: object
+    properties:
+      access:
+        type: string
+      refresh:
+        type: string
   UserWithToken:
     type: object
     properties:
       user:
         $ref: '#/definitions/User'
       token:
-        type: string
+        $ref: '#/definitions/Tokens'
   LoginUser:
     type: object
     properties:
