@@ -78,7 +78,7 @@ paths:
           description: User was unsuccessfully created due to backend error
           schema:
             $ref: '#/definitions/Error'
-  /api/v1/user/login:
+  /api/v1/auth/login:
     post:
       summary: Login with local authentication strategy
       operationId: loginUser
@@ -104,25 +104,10 @@ paths:
           description: A token could not be created
           schema:
             $ref: '#/definitions/Error'
-  /api/v1/user/logout:
+  /api/v1/auth/logout:
     post:
       summary: Endpoint to log a user out with a specific token
       operationId: logoutUser
-      x-google-backend:
-        address: https://ultmt-api-nal27utw4a-uc.a.run.app
-        path_translation: APPEND_PATH_TO_ADDRESS
-        disable_auth: true
-      responses:
-        '200':
-          description: A success message with no data
-        '404':
-          description: An error message because the user was not found
-          schema:
-            $ref: '#/definitions/Error'
-  /api/v1/user/logoutAll:
-    post:
-      summary: Endpoint to log a user out of all devices
-      operationId: logoutAllUser
       x-google-backend:
         address: https://ultmt-api-nal27utw4a-uc.a.run.app
         path_translation: APPEND_PATH_TO_ADDRESS
@@ -487,7 +472,7 @@ paths:
           description: Backend error message
           schema:
             $ref: '#/definitions/Error'
-  /api/v1/user/manager/authenticate:
+  /api/v1/auth/manager:
     get:
       summary: Authenticate a user as manager of a team
       operationId: authenticateManager
@@ -507,6 +492,23 @@ paths:
             $ref: '#/definitions/User'
         '401':
           description: User is unauthenticated
+  /api/v1/auth/refresh:
+    post:
+      summary: Refresh a user's access token
+      operationId: refreshTokens
+      x-google-backend:
+        address: https://ultmt-api-nal27utw4a-uc.a.run.app
+        path_translation: APPEND_PATH_TO_ADDRESS
+        disable_auth: true
+      responses:
+        '200':
+          description: Updates tokens
+          schema:
+            $ref: '#/definitions/Tokens'
+        '401':
+          description: Invalid token
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/team/search:
     get:
       summary: Search for team by location, name, or teamname
@@ -1264,7 +1266,7 @@ paths:
           description: A backend error occurred
           schema:
             $ref: '#/definitions/Error'
-  /api/v1/game/resolve/{id}:
+  /api/v1/game/{id}/resolve:
     put:
       summary: Resolve team two of a game
       operationId: resolveGame
@@ -1365,6 +1367,42 @@ paths:
           description: Backend error
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/game/{id}/reactivate:
+    put:
+      summary: Reactivate a game by either team
+      operationId: reactivateGame
+      x-google-backend:
+        address: https://stall-one-nal27utw4a-uc.a.run.app
+        path_translation: APPEND_PATH_TO_ADDRESS
+        disable_auth: true
+      parameters:
+        - in: path
+          name: id
+          description: Game ID
+          required: true
+          type: string
+        - in: query
+          name: team
+          description: Team ID
+          type: string
+          required: true
+      responses:
+        '200':
+          description: Successfully reactivated team two
+          schema:
+            $ref: '#/definitions/GameWithToken'
+        '401':
+          description: Unauthenticated user
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Unfound game
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Backend error
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/point:
     post:
       summary: Create a point for a game
@@ -1399,6 +1437,42 @@ paths:
             $ref: '#/definitions/Error'
         '404':
           description: Unfound game
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/point/{id}/pulling:
+    put:
+      summary: Update pulling and receiving teams for a point
+      operationId: pointPullingTeam
+      x-google-backend:
+        address: https://stall-one-nal27utw4a-uc.a.run.app
+        path_translation: APPEND_PATH_TO_ADDRESS
+        disable_auth: true
+      parameters:
+        - in: query
+          name: team
+          description: string
+          required: true
+          type: string
+        - in: path
+          name: id
+          description: Point ID
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Players successfully added
+          schema:
+            $ref: '#/definitions/Point'
+        '400':
+          description: Error adding players
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: Invalid game token
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Unfound point or game
           schema:
             $ref: '#/definitions/Error'
   /api/v1/point/{id}/players:
@@ -1497,6 +1571,77 @@ paths:
           description: Unable to find point or game
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/tournament:
+    post:
+      summary: Create a tournament
+      operationId: createTournament
+      x-google-backend:
+        address: https://stall-one-nal27utw4a-uc.a.run.app
+        path_translation: APPEND_PATH_TO_ADDRESS
+        disable_auth: true
+      parameters:
+        - in: body
+          name: createTournamentData
+          description: Data needed to create a tournament
+          schema:
+            $ref: '#/definitions/CreateTournament'
+      responses:
+        '201':
+          description: Successfully created a tournament
+          schema:
+            $ref: '#/definitions/Tournament'
+        '500':
+          description: Error creating tournament
+          schema: 
+            $ref: '#/definitions/Error'
+  /api/v1/tournament/{id}:
+    get:
+      summary: Get a tournament
+      operationId: getTournament
+      x-google-backend:
+        address: https://stall-one-nal27utw4a-uc.a.run.app
+        path_translation: APPEND_PATH_TO_ADDRESS
+        disable_auth: true
+      parameters:
+        - in: path
+          name: id
+          description: Tournament ID
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Found game
+          schema:
+            $ref: '#/definitions/Tournament'
+        '404':
+          description: Could not find game
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/tournament/search:
+    get:
+      summary: Search tournaments
+      operationId: searchTournaments
+      x-google-backend:
+        address: https://stall-one-nal27utw4a-uc.a.run.app
+        path_translation: APPEND_PATH_TO_ADDRESS
+        disable_auth: true
+      parameters:
+        - in: query
+          name: q
+          type: string
+          description: Search query string
+          required: true
+      responses:
+        '200':
+          description: An array of length 0 or greater with tournaments
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Tournament'
+        '500':
+          description: An error occurred on the backend
+          schema:
+            $ref: '#/definitions/Error'
 securityDefinitions:
   APIKey:
     type: apiKey
@@ -1579,13 +1724,20 @@ definitions:
         type: array
         items:
           type: string
+  Tokens:
+    type: object
+    properties:
+      access:
+        type: string
+      refresh:
+        type: string
   UserWithToken:
     type: object
     properties:
       user:
         $ref: '#/definitions/User'
       token:
-        type: string
+        $ref: '#/definitions/Tokens'
   LoginUser:
     type: object
     properties:
@@ -1699,10 +1851,6 @@ definitions:
         type: boolean
       creator:
         $ref: '#/definitions/EmbeddedUser'
-      teamOneToken:
-        type: string
-      teamTwoToken:
-        type: string
       scoreLimit:
         type: number
       teamOneScore:
@@ -1738,6 +1886,8 @@ definitions:
         type: number
       floaterTimeout:
         type: boolean
+      tournament:
+        $ref: '#/definitions/Tournament'
   CreateGame:
     type: object
     properties:
@@ -1766,6 +1916,8 @@ definitions:
         type: number
       floaterTimeout:
         type: boolean
+      tournament:
+        $ref: '#/definitions/Tournament'
   UpdateGame:
     type: object
     properties:
@@ -1790,6 +1942,8 @@ definitions:
         type: number
       floaterTimeout:
         type: boolean
+      tournament:
+        $ref: '#/definitions/Tournament'
   GameWithToken:
     type: object
     properties:
@@ -1822,3 +1976,31 @@ definitions:
         $ref: '#/definitions/EmbeddedTeam'
       scoringTeam:
         $ref: '#/definitions/EmbeddedTeam'
+  CreateTournament:
+    type: object
+    properties:
+      name:
+        type: string
+      eventId:
+        type: string
+      startDate:
+        type: string
+        format: date
+      endDate:
+        type: string
+        format: date
+  Tournament:
+    type: object
+    properties:
+      _id:
+        type: string
+      name:
+        type: string
+      eventId:
+        type: string
+      startDate:
+        type: string
+        format: date
+      endDate:
+        type: string
+        format: date
