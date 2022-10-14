@@ -1542,6 +1542,37 @@ paths:
           description: Unable to find point or game
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/point/{id}/reactivate:
+    put:
+      summary: Reactivate a point
+      operationId: reactivatePoint
+      x-google-backend:
+          address: https://stall-one-nal27utw4a-uc.a.run.app
+          path_translation: APPEND_PATH_TO_ADDRESS
+          disable_auth: true
+      parameters:
+        - in: path
+          name: id
+          description: Point ID
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Point successfully reactivated
+          schema:
+            $ref: '#/definitions/Point'
+        '400':
+          description: A data error occurred while reactivating point
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: Invalid game token
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Unable to find point or game
+          schema:
+            $ref: '#/definitions/Error'  
   /api/v1/point/{id}:
     delete:
       summary: Delete a point
