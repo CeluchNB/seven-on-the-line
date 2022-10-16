@@ -1673,6 +1673,110 @@ paths:
           description: An error occurred on the backend
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/action/{id}:
+    put:
+      summary: Edit an action
+      operationId: editAction
+      x-google-backend:
+        address: https://stall-one-nal27utw4a-uc.a.run.app
+        path_translation: APPEND_PATH_TO_ADDRESS
+        disable_auth: true
+      parameters:
+        - in: path
+          name: id
+          description: Action ID
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Successfully edited action
+          schema:
+            $ref: '#/definitions/Action'
+        '400':
+          description: Client error
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Unfound action
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Backend error
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/action/{id}/comment:
+    post:
+      summary: Create a comment
+      operationId: createComment
+      x-google-backend:
+        address: https://stall-one-nal27utw4a-uc.a.run.app
+        path_translation: APPEND_PATH_TO_ADDRESS
+        disable_auth: true
+      parameters:
+        - in: path
+          name: id
+          description: Action ID
+          required: true
+          type: string
+        - in: body
+          name: comment
+          description: Comment text
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Successfully posted comment
+          schema:
+            $ref: '#/definitions/Action'
+        '400':
+          description: Client error
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Unfound action
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Backend error
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/action/{id}/comment/{commentNumber}:
+    delete:
+      summary: Delete a comment
+      operationId: deleteComment
+      x-google-backend:
+        address: https://stall-one-nal27utw4a-uc.a.run.app
+        path_translation: APPEND_PATH_TO_ADDRESS
+        disable_auth: true
+      parameters:
+        - in: path
+          name: id
+          description: Action ID
+          required: true
+          type: string
+        - in: path
+          name: commentNumber
+          description: Comment ID to delete
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Successfully deleted comment
+          schema:
+            $ref: '#/definitions/Action'
+        '400':
+          description: Client error
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Unfound action
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Backend error
+          schema:
+            $ref: '#/definitions/Error'
 securityDefinitions:
   APIKey:
     type: apiKey
@@ -2035,3 +2139,36 @@ definitions:
       endDate:
         type: string
         format: date
+  Action:
+    type: object
+    properties:
+      _id:
+        type: string
+      actionType:
+        type: string
+      actionNumber:
+        type: number
+      comments:
+        type: array
+        items:
+          $ref: '#/definitions/Comment'
+      team:
+        $ref: '#/definitions/EmbeddedTeam'
+      playerOne:
+        $ref: '#/definitions/EmbeddedUser'
+      playerTwo:
+        $ref: '#/definitions/EmbeddedUser'
+      tags:
+        type: array
+        items:
+          type: string
+  Comment:
+    type: object
+    properties:
+      user:
+        $ref: '#/definitions/EmbeddedUser'
+      comment:
+        type: string
+      commentNumber:
+        type: number
+
