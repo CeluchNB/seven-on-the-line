@@ -1437,6 +1437,32 @@ paths:
           description: Backend error
           schema:
             $ref: '#/definitions/Error'
+    get:
+      summary: Get a game by id
+      operationId: getGame
+      x-google-backend:
+        address: https://stall-one-nal27utw4a-uc.a.run.app
+        path_translation: APPEND_PATH_TO_ADDRESS
+        disable_auth: true
+      parameters:
+        - in: path
+          name: id
+          description: Game ID
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Found game
+          schema:
+            $ref: '#/definitions/Game'
+        '404':
+          description: Unfound game
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Backend error
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/point:
     post:
       summary: Create a point for a game
@@ -1527,7 +1553,9 @@ paths:
           name: players
           description: Array of players for point, must be correct amount
           schema:
-            $ref: '#/definitions/EmbeddedUser'
+            type: array
+            items:
+              $ref: '#/definitions/EmbeddedUser'
       responses:
         '200':
           description: Players successfully added
@@ -1634,6 +1662,33 @@ paths:
             $ref: '#/definitions/Error'
         '404':
           description: Unable to find point or game
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/points:
+    get:
+      summary: Get an array of points by ids
+      operationId: getPoints
+      x-google-backend:
+        address: https://stall-one-nal27utw4a-uc.a.run.app
+        path_translation: APPEND_PATH_TO_ADDRESS
+        disable_auth: true
+      parameters:
+        - in: body
+          name: ids
+          description: ids of points to get
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: Array of points
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Point'
+        '500':
+          description: Backend error
           schema:
             $ref: '#/definitions/Error'
   /api/v1/tournament:
@@ -1807,6 +1862,33 @@ paths:
           description: Unfound action
           schema:
             $ref: '#/definitions/Error'
+        '500':
+          description: Backend error
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/actions:
+    get:
+      summary: Get array of actions by their ids
+      operationId: getActions
+      x-google-backend:
+        address: https://stall-one-nal27utw4a-uc.a.run.app
+        path_translation: APPEND_PATH_TO_ADDRESS
+        disable_auth: true
+      parameters:
+        - in: body
+          name: ids
+          description: ids of actions to get
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: Array of actions
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Action'
         '500':
           description: Backend error
           schema:
