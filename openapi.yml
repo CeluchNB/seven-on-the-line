@@ -1492,6 +1492,58 @@ paths:
           description: Backend error
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/game/search:
+    get:
+      summary: Search games with certain parameters
+      operationId: searchGames
+      x-google-backend:
+        address: https://stall-one-nal27utw4a-uc.a.run.app
+        path_translation: APPEND_PATH_TO_ADDRESS
+        disable_auth: true
+      parameters:
+        - in: query
+          name: q
+          description: Query string
+          required: false
+          type: string
+        - in: query
+          name: live
+          description: Value for live game
+          required: false
+          type: boolean
+        - in: query
+          name: after
+          description: Date after which the game was played
+          required: false
+          type: string
+          format: date
+        - in: query
+          name: before
+          description: Date before which the game was played
+          required: false
+          type: string
+          format: date
+        - in: query
+          name: pageSize
+          description: Amount of results to return
+          required: false
+          type: number
+        - in: query
+          name: offset
+          description: Amount of results to offset in return list
+          required: false
+          type: number
+      responses:
+        '200':
+          description: Array of games
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Game'
+        '500':
+          description: Backend error
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/point:
     post:
       summary: Create a point for a game
