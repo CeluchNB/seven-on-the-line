@@ -1544,6 +1544,30 @@ paths:
           description: Backend error
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/game/full:
+    post:
+      summary: Create a full game
+      operationId: createFullGame
+      x-google-backend:
+        address: https://stall-one-nal27utw4a-uc.a.run.app
+        path_translation: APPEND_PATH_TO_ADDRESS
+        disable_auth: true
+      parameters:
+        - in: body
+          name: gameData
+          description: Data to create a full game, including points and actions
+          required: true
+          schema:
+            $ref: '#/definitions/FullGame'
+      responses:
+        '201':
+          description: Created game
+          schema:
+            $ref: '#/definitions/Game'
+        '500':
+          description: Backend error
+          schema:
+            $ref: '#/definitions/Error'
   /api/v1/point:
     post:
       summary: Create a point for a game
@@ -2346,4 +2370,21 @@ definitions:
         type: string
       commentNumber:
         type: number
+  FullPoint:
+    allOf:
+      - $ref: '#/definitions/Point'
+      - properties:
+          actions:
+            type: array
+            items:
+              $ref: '#/definitions/Action'
+  FullGame:
+    allOf:
+      - $ref: '#/definitions/Game'
+      - properties:
+          points:
+            type: array
+            items:
+              $ref: '#/definitions/FullPoint'
+
 
