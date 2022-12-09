@@ -1778,7 +1778,7 @@ paths:
       parameters:
         - in: query
           name: team
-          description: string
+          description: one | two
           required: true
           type: string
         - in: path
@@ -1797,6 +1797,36 @@ paths:
           description: Unfound point
           schema:
             $ref: '#/definitions/Error'
+        '500':
+          description: Backend error
+          schema:
+            $ref: '#/definitions/Error'
+  /api/v1/point/{id}/live/actions:
+    get:
+      summary: Get all live actions associated with a point
+      operationId: getLiveActionsByPoint
+      x-google-backend:
+        address: https://stall-one-nal27utw4a-uc.a.run.app
+        path_translation: APPEND_PATH_TO_ADDRESS
+        disable_auth: true
+      parameters:
+        - in: query
+          name: gameId
+          description: Game ID
+          required: true
+          type: string
+        - in: path
+          name: id
+          description: Point ID
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Array of actions
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Action'
         '500':
           description: Backend error
           schema:
