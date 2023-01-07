@@ -1544,6 +1544,31 @@ paths:
           description: Backend error
           schema:
             $ref: '#/definitions/Error'
+  /api/v1/game/team/{id}:
+    get:
+      summary: Get all games associated with a team
+      operationId: getGamesByTeamId
+      x-google-backend:
+        address: https://stall-one-nal27utw4a-uc.a.run.app
+        path_translation: APPEND_PATH_TO_ADDRESS
+        disable_auth: true
+      parameters:
+        - in: path
+          name: id
+          description: Team ID
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Array of games
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Game'
+        '500':
+          description: Backend error
+          schema:
+            $ref: '#/definitions/Error'  
   /api/v1/game/full:
     post:
       summary: Create a full game
